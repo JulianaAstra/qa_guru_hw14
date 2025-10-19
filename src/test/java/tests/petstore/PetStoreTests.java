@@ -1,5 +1,6 @@
 package tests.petstore;
 
+import io.restassured.response.ValidatableResponse;
 import models.record.petstore.LoginResponseModel;
 import models.record.petstore.PetBodyModel;
 import models.record.petstore.PetResponseBodyModel;
@@ -86,14 +87,16 @@ public class PetStoreTests extends TestBase {
     @Test
     @DisplayName("DELETE Удалить несуществующего питомца")
     void deletePetTest() {
-        given()
+        ValidatableResponse response = step("Make request for deleting non-existing pet", () ->
+            given()
                 .filter(withCustomTemplates())
                 .header("x-api-key", API_KEY)
-                .log()
-                .uri()
-        .when()
+                .log().uri()
+            .when()
                 .delete("/pet/" + TestData.notExistPetId)
-        .then()
-                .statusCode(404);
+            .then());
+
+        step("Check status code 404", () ->
+            response.statusCode(404));
     }
 }
