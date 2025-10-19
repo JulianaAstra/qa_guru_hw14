@@ -6,9 +6,7 @@ import io.restassured.specification.ResponseSpecification;
 
 import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.restassured.RestAssured.with;
-import static io.restassured.filter.log.LogDetail.BODY;
-import static io.restassured.filter.log.LogDetail.STATUS;
-
+import static io.restassured.filter.log.LogDetail.*;
 
 public class ReqresSpec {
     public static final String API_KEY = "reqres-free-v1";
@@ -22,8 +20,7 @@ public class ReqresSpec {
     public static ResponseSpecification responseSpec(int expectedStatusCode) {
         return new ResponseSpecBuilder()
             .expectStatusCode(expectedStatusCode)
-            .log(STATUS)
-            .log(BODY)
+            .log(ALL)
             .build();
     }
 }
