@@ -12,7 +12,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static specs.PetStoreSpec.successResponseSpec;
+import static specs.PetStoreSpec.responseSpec;
 
 public class PetStoreTests extends TestBase {
     @Test
@@ -28,7 +28,7 @@ public class PetStoreTests extends TestBase {
             .when()
                 .get("/user/login")
             .then()
-                .spec(successResponseSpec)
+                .spec(responseSpec(200))
                 .extract().as(LoginResponseModel.class));
 
         step("Check response: session created", () -> {
@@ -54,7 +54,7 @@ public class PetStoreTests extends TestBase {
             .when()
                     .post("/pet")
             .then()
-                    .spec(successResponseSpec);
+                    .spec(responseSpec(200));
         });
 
         PetResponseModel response = step("Add tag to existing pet", () ->
@@ -65,7 +65,7 @@ public class PetStoreTests extends TestBase {
             .when()
                     .put("/pet")
             .then()
-                    .spec(successResponseSpec)
+                    .spec(responseSpec(200))
                     .extract().as(PetResponseModel.class));
 
         step("Check response: tag added to created pet ", () -> {

@@ -13,8 +13,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static specs.ReqresSpec.creationResponseSpec;
-import static specs.ReqresSpec.successResponseSpec;
+import static specs.ReqresSpec.*;
 
 public class ReqresTests extends TestBase {
     @Test
@@ -28,7 +27,7 @@ public class ReqresTests extends TestBase {
             .when()
                     .get("/users")
             .then()
-                    .spec(successResponseSpec)
+                    .spec(responseSpec(200))
                     .extract().as(UsersResponseModel.class));
 
         step("Check response pagination parameters", () -> {
@@ -55,7 +54,7 @@ public class ReqresTests extends TestBase {
             .when()
                 .post("/users")
             .then()
-                .spec(creationResponseSpec)
+                .spec(responseSpec(201))
                 .extract().as(UserResponseModel.class));
 
         step("Check response user data", () -> {

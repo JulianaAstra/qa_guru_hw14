@@ -6,9 +6,11 @@ import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.filter.log.LogDetail.STATUS;
 
 public class PetStoreSpec {
-    public static ResponseSpecification successResponseSpec = new ResponseSpecBuilder()
-            .expectStatusCode(200)
+    public static ResponseSpecification responseSpec(int expectedStatusCode) {
+        return new ResponseSpecBuilder()
+            .expectStatusCode(expectedStatusCode)
             .log(STATUS)
             .log(BODY)
             .build();
+    }
 }
