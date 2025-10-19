@@ -1,4 +1,4 @@
 package models.record.petstore;
 
-public record PetResponseBodyModel(Integer id, String[] urls, TagBodyModel[] tags) {
+public record PetResponseBodyModel(Integer id, String[] photoUrls, TagBodyModel[] tags) {
 }
