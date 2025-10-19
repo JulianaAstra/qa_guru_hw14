@@ -13,6 +13,8 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.ReqresSpec.creationResponseSpec;
+import static specs.ReqresSpec.successResponseSpec;
 
 public class ReqresTests extends TestBase {
     @Test
@@ -20,17 +22,13 @@ public class ReqresTests extends TestBase {
     void getUsersTest() {
         UsersResponseModel response = step("Make response to get list of users", () ->
             given()
-                    .filter(withCustomTemplates())
-                    .header("x-api-key",API_KEY)
+                    .spec(baseSpec)
                     .queryParam("page", 1)
                     .queryParam("per_page", 12)
-                    .log().uri()
             .when()
                     .get("/users")
             .then()
-                    .log().status()
-                    .log().body()
-                    .statusCode(200)
+                    .spec(successResponseSpec)
                     .extract().as(UsersResponseModel.class));
 
         step("Check response pagination parameters", () -> {
@@ -51,17 +49,13 @@ public class ReqresTests extends TestBase {
 
         UserResponseModel response = step("Make response: add new user", () ->
             given()
-                .filter(withCustomTemplates())
-                .header("x-api-key",API_KEY)
+                .spec(baseSpec)
                 .contentType(JSON)
-                .log().uri()
                 .body(user)
             .when()
                 .post("/users")
             .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
+                .spec(creationResponseSpec)
                 .extract().as(UserResponseModel.class));
 
         step("Check response user data", () -> {

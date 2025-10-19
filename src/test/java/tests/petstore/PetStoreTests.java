@@ -7,13 +7,12 @@ import models.record.petstore.PetResponseModel;
 import models.record.petstore.TagModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static specs.PetStoreSpec.successResponseSpec;
 
 public class PetStoreTests extends TestBase {
     @Test
@@ -23,16 +22,13 @@ public class PetStoreTests extends TestBase {
 
         LoginResponseModel response = step("Make request", () ->
             given()
-                .filter(withCustomTemplates())
-                .header("x-api-key", API_KEY)
+                .spec(baseSpec)
                 .queryParam("username", testData.userName)
                 .queryParam("password", testData.userPassword)
-                .log()
-                .uri()
             .when()
                 .get("/user/login")
             .then()
-                .statusCode(200)
+                .spec(successResponseSpec)
                 .extract().as(LoginResponseModel.class));
 
         step("Check response: session created", () -> {
@@ -52,29 +48,24 @@ public class PetStoreTests extends TestBase {
 
         step("Make new pet", () -> {
             given()
+                    .spec(baseSpec)
                     .body(newPet)
-                    .header("x-api-key", API_KEY)
                     .contentType(JSON)
             .when()
                     .post("/pet")
             .then()
-                    .log().body()
-                    .statusCode(200);
+                    .spec(successResponseSpec);
         });
 
         PetResponseModel response = step("Add tag to existing pet", () ->
             given()
-                    .filter(withCustomTemplates())
+                    .spec(baseSpec)
                     .body(petWithTags)
-                    .header("x-api-key", API_KEY)
                     .contentType(JSON)
-                    .log().uri()
             .when()
                     .put("/pet")
             .then()
-                    .log().status()
-                    .log().body()
-                    .statusCode(200)
+                    .spec(successResponseSpec)
                     .extract().as(PetResponseModel.class));
 
         step("Check response: tag added to created pet ", () -> {
@@ -89,9 +80,7 @@ public class PetStoreTests extends TestBase {
     void deletePetTest() {
         ValidatableResponse response = step("Make request", () ->
             given()
-                .filter(withCustomTemplates())
-                .header("x-api-key", API_KEY)
-                .log().uri()
+                .spec(baseSpec)
             .when()
                 .delete("/pet/" + TestData.notExistPetId)
             .then());
