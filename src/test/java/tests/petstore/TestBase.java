@@ -1,5 +1,6 @@
 package tests.petstore;
 
+import helpers.CustomAllureListener;
 import org.junit.jupiter.api.BeforeAll;
 
 import static io.restassured.RestAssured.*;
