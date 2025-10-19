@@ -2,9 +2,9 @@ package tests.petstore;
 
 import io.restassured.response.ValidatableResponse;
 import models.record.petstore.LoginResponseModel;
-import models.record.petstore.PetBodyModel;
-import models.record.petstore.PetResponseBodyModel;
-import models.record.petstore.TagBodyModel;
+import models.record.petstore.PetModel;
+import models.record.petstore.PetResponseModel;
+import models.record.petstore.TagModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -46,9 +46,9 @@ public class PetStoreTests extends TestBase {
     void renewPetTagsTest() {
         TestData testData = new TestData();
 
-        PetBodyModel newPet = new PetBodyModel(testData.petId, testData.petName, testData.availableStatus, null);
-        TagBodyModel[] tags = new TagBodyModel[] {new TagBodyModel(testData.petTagId, testData.petTag)};
-        PetBodyModel petWithTags = new PetBodyModel(testData.petId, null, null, tags);
+        PetModel newPet = new PetModel(testData.petId, testData.petName, testData.availableStatus, null);
+        TagModel[] tags = new TagModel[] {new TagModel(testData.petTagId, testData.petTag)};
+        PetModel petWithTags = new PetModel(testData.petId, null, null, tags);
 
         step("Make new pet", () -> {
             given()
@@ -62,7 +62,7 @@ public class PetStoreTests extends TestBase {
                     .statusCode(200);
         });
 
-        PetResponseBodyModel response = step("Add tag to existing pet", () ->
+        PetResponseModel response = step("Add tag to existing pet", () ->
             given()
                     .filter(withCustomTemplates())
                     .body(petWithTags)
@@ -75,19 +75,19 @@ public class PetStoreTests extends TestBase {
                     .log().status()
                     .log().body()
                     .statusCode(200)
-                    .extract().as(PetResponseBodyModel.class));
+                    .extract().as(PetResponseModel.class));
 
         step("Check response: tag added to created pet ", () -> {
-            assertEquals(response.id(), testData.petId);
-            assertEquals(response.tags()[0].id(), testData.petTagId);
-            assertEquals(response.tags()[0].name(), testData.petTag);
+            assertEquals(testData.petId, response.id());
+            assertEquals(testData.petTagId, response.tags()[0].id());
+            assertEquals(testData.petTag, response.tags()[0].name());
         });
     }
 
     @Test
     @DisplayName("DELETE Удалить несуществующего питомца")
     void deletePetTest() {
-        ValidatableResponse response = step("Make request for deleting non-existing pet", () ->
+        ValidatableResponse response = step("Make request", () ->
             given()
                 .filter(withCustomTemplates())
                 .header("x-api-key", API_KEY)

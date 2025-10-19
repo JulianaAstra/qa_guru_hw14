@@ -1,60 +1,72 @@
 package tests.reqres;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import models.pojo.reqres.UserBodyModel;
+import models.pojo.reqres.UserResponseModel;
+import models.pojo.reqres.UsersResponseModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static helpers.CustomAllureListener.withCustomTemplates;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.*;
 import static io.restassured.http.ContentType.JSON;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReqresTests extends TestBase {
     @Test
     @DisplayName("GET Получить список всех пользователей")
     void getUsersTest() {
-      given()
-              .header("x-api-key",API_KEY)
-              .queryParam("page", 1)
-              .queryParam("per_page", 12)
-              .log().uri()
-      .when()
-              .get("/users")
-      .then()
-              .log().status()
-              .log().body()
-              .statusCode(200)
-              .assertThat().body(matchesJsonSchemaInClasspath("schemas/reqres/users-list-schema.json"))
-              .body("page", is(1))
-              .body("per_page", is(12))
-              .body("total", is(12))
-              .body("total_pages", is(1));
+        UsersResponseModel response = step("Make response to get list of users", () ->
+            given()
+                    .filter(withCustomTemplates())
+                    .header("x-api-key",API_KEY)
+                    .queryParam("page", 1)
+                    .queryParam("per_page", 12)
+                    .log().uri()
+            .when()
+                    .get("/users")
+            .then()
+                    .log().status()
+                    .log().body()
+                    .statusCode(200)
+                    .extract().as(UsersResponseModel.class));
+
+        step("Check response pagination parameters", () -> {
+            assertEquals(1, response.getPage());
+            assertEquals(12, response.getPerPage());
+            assertEquals(12, response.getTotal());
+            assertEquals(1, response.getTotalPages());
+        });
     }
 
     @Test
     @DisplayName("POST Добавить нового пользователя")
     void addNewUser() {
         TestData testData = new TestData();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode user = objectMapper.createObjectNode();
+        UserBodyModel user = new UserBodyModel();
+        user.setName(testData.userName);
+        user.setJob(testData.job);
 
-        user.put("name", testData.userName);
-        user.put("job", testData.job);
-
-        given()
+        UserResponseModel response = step("Make response: add new user", () ->
+            given()
+                .filter(withCustomTemplates())
                 .header("x-api-key",API_KEY)
                 .contentType(JSON)
                 .log().uri()
                 .body(user)
-        .when()
+            .when()
                 .post("/users")
-        .then()
+            .then()
                 .log().status()
                 .log().body()
                 .statusCode(201)
-                .body(matchesJsonSchemaInClasspath("schemas/reqres/user-created-schema.json"))
-                .body("name", is(testData.userName))
-                .body("job", is(testData.job));
+                .extract().as(UserResponseModel.class));
+
+        step("Check response user data", () -> {
+            assertEquals(testData.userName, response.getName());
+            assertEquals(testData.job, response.getJob());
+        });
     }
 }
