@@ -6,12 +6,9 @@ import models.pojo.reqres.UsersResponseModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.*;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static specs.ReqresSpec.*;
 
@@ -21,7 +18,7 @@ public class ReqresTests extends TestBase {
     void getUsersTest() {
         UsersResponseModel response = step("Make response to get list of users", () ->
             given()
-                    .spec(baseSpec)
+                    .spec(requestSpec)
                     .queryParam("page", 1)
                     .queryParam("per_page", 12)
             .when()
@@ -48,7 +45,7 @@ public class ReqresTests extends TestBase {
 
         UserResponseModel response = step("Make response: add new user", () ->
             given()
-                .spec(baseSpec)
+                .spec(requestSpec)
                 .contentType(JSON)
                 .body(user)
             .when()

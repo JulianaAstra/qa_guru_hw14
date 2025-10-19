@@ -12,6 +12,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static specs.PetStoreSpec.requestSpec;
 import static specs.PetStoreSpec.responseSpec;
 
 public class PetStoreTests extends TestBase {
@@ -22,7 +23,7 @@ public class PetStoreTests extends TestBase {
 
         LoginResponseModel response = step("Make request", () ->
             given()
-                .spec(baseSpec)
+                .spec(requestSpec)
                 .queryParam("username", testData.userName)
                 .queryParam("password", testData.userPassword)
             .when()
@@ -48,7 +49,7 @@ public class PetStoreTests extends TestBase {
 
         step("Make new pet", () -> {
             given()
-                    .spec(baseSpec)
+                    .spec(requestSpec)
                     .body(newPet)
                     .contentType(JSON)
             .when()
@@ -59,7 +60,7 @@ public class PetStoreTests extends TestBase {
 
         PetResponseModel response = step("Add tag to existing pet", () ->
             given()
-                    .spec(baseSpec)
+                    .spec(requestSpec)
                     .body(petWithTags)
                     .contentType(JSON)
             .when()
@@ -80,7 +81,7 @@ public class PetStoreTests extends TestBase {
     void deletePetTest() {
         ValidatableResponse response = step("Make request", () ->
             given()
-                .spec(baseSpec)
+                .spec(requestSpec)
             .when()
                 .delete("/pet/" + TestData.notExistPetId)
             .then());
