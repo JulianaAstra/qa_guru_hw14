@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.*;
 import static io.restassured.http.ContentType.JSON;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static specs.ReqresSpec.*;
 
@@ -25,6 +26,7 @@ public class ReqresTests extends TestBase {
                     .get("/users")
             .then()
                     .spec(responseSpec(200))
+                    .assertThat().body(matchesJsonSchemaInClasspath("schemas/reqres/users-list-schema.json"))
                     .extract().as(UsersResponseModel.class));
 
         step("Check response pagination parameters", () -> {
@@ -52,6 +54,7 @@ public class ReqresTests extends TestBase {
                 .post("/users")
             .then()
                 .spec(responseSpec(201))
+                .body(matchesJsonSchemaInClasspath("schemas/reqres/user-created-schema.json"))
                 .extract().as(UserResponseModel.class));
 
         step("Check response user data", () -> {
