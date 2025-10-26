@@ -35,6 +35,14 @@ dependencies {
     )
 }
 
-test {
+tasks.withType(Test) {
     useJUnitPlatform()
+    systemProperty "allure.results.directory", "build/allure-results"
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
 }

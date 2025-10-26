@@ -1,6 +1,9 @@
 package tests.reqres;
 
 import org.junit.jupiter.api.BeforeAll;
+
+import java.util.Map;
+
 import static io.restassured.RestAssured.*;
 
 public class TestBase {
